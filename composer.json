@@ -1,0 +1,22 @@
+{
+    "name": "mashbo/mashbot-task-runner",
+    "description": "Configurable / scriptable task runner",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Adam Quaile",
+            "email": "aquaile@mashbo.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Mashbo\\Mashbot\\TaskRunner\\": "src/"
+        }
+    },
+    "require": {
+    },
+    "require-dev": {
+        "phpspec/phpspec": "~2.4",
+        "phpunit/phpunit": "~5.2"
+    }
+}

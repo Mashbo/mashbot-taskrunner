@@ -1,0 +1,4 @@
+suites:
+    acme_suite:
+        namespace: Mashbo\Mashbot\TaskRunner
+        psr4_prefix: Mashbo\Mashbot\TaskRunner
