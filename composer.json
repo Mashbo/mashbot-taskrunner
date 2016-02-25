@@ -10,7 +10,8 @@
     ],
     "autoload": {
         "psr-4": {
-            "Mashbo\\Mashbot\\TaskRunner\\": "src/"
+            "Mashbo\\Mashbot\\TaskRunner\\": "src/",
+            "Mashbo\\Mashbot\\TaskRunner\\Tests\\": "tests/"
         }
     },
     "require": {

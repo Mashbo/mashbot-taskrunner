@@ -25,4 +25,9 @@ class TaskRunner
 
         $this->tasks[$task]();
     }
+
+    public function extend(TaskRunnerExtension $extension)
+    {
+        $extension->amendTasks($this);
+    }
 }
