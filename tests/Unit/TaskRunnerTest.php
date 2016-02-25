@@ -72,6 +72,39 @@ class TaskRunnerTest extends \PHPUnit_Framework_TestCase
         $this->sut->invoke('task:with:context');
     }
 
+    public function test_task_can_be_composed_of_other_tasks()
+    {
+        $this->sut->addComposed('task', ['task1', 'task2', 'task3']);
+
+        $lastCalled = null;
+
+        $task1wasCalled = false;
+        $this->sut->add('task1', function() use (&$task1wasCalled, &$lastCalled) {
+            $task1wasCalled = true;
+            $this->assertNull($lastCalled);
+            $lastCalled = 'task1';
+        });
+
+        $task2wasCalled = false;
+        $this->sut->add('task2', function() use (&$task2wasCalled, &$lastCalled) {
+            $task2wasCalled = true;
+            $this->assertEquals('task1', $lastCalled);
+            $lastCalled = 'task2';
+        });
+
+        $task3wasCalled = false;
+        $this->sut->add('task3', function() use (&$task3wasCalled, &$lastCalled) {
+            $task3wasCalled = true;
+            $this->assertEquals('task2', $lastCalled);
+        });
+
+        $this->sut->invoke('task');
+        $this->assertTrue($task1wasCalled);
+        $this->assertTrue($task2wasCalled);
+        $this->assertTrue($task3wasCalled);
+
+    }
+
     /**
      * @depends test_task_context_will_be_injected_if_anon_function_type_hints_it
      */

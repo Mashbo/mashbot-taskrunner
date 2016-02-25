@@ -17,6 +17,16 @@ class TaskRunner
         $this->tasks[$task] = $callable;
     }
 
+    public function addComposed($task, $composedTasks)
+    {
+        $this->tasks[$task] = function() use ($composedTasks) {
+
+            foreach ($composedTasks as $task) {
+                $this->invoke($task);
+            }
+        };
+    }
+
     public function invoke($task, array $args = [])
     {
         $this->invokeCallable($this->locateCallable($task), $args);
