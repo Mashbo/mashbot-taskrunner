@@ -17,9 +17,9 @@ class TaskRunner
         $this->tasks[$task] = $callable;
     }
 
-    public function invoke($task)
+    public function invoke($task, array $args = [])
     {
-        $this->invokeCallable($this->locateCallable($task));
+        $this->invokeCallable($this->locateCallable($task), $args);
     }
 
     public function extend(TaskRunnerExtension $extension)
@@ -30,7 +30,7 @@ class TaskRunner
     /**
      * @param $task
      */
-    private function invokeCallable(callable $task)
+    private function invokeCallable(callable $task, array $args)
     {
         switch (true) {
             case (is_object($task) && ($task instanceof \Closure)):
@@ -52,7 +52,7 @@ class TaskRunner
             $parameters[0]->getClass() &&
             $parameters[0]->getClass()->getName() == TaskContext::class
         ) {
-            call_user_func_array($task, [new TaskContext($this, [])]);
+            call_user_func_array($task, [new TaskContext($this, $args)]);
             return;
         }
 

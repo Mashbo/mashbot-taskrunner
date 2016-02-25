@@ -72,6 +72,17 @@ class TaskRunnerTest extends \PHPUnit_Framework_TestCase
         $this->sut->invoke('task:with:context');
     }
 
+    /**
+     * @depends test_task_context_will_be_injected_if_anon_function_type_hints_it
+     */
+    public function test_task_context_is_initialised_with_arguments_from_invoke()
+    {
+        $this->sut->add('task:with:args', function(TaskContext $context) {
+            $this->assertEquals('bar', $context->argument('foo'));
+        });
+        $this->sut->invoke('task:with:args', ['foo' => 'bar']);
+    }
+
     public function exampleCallable()
     {
         $this->testCallableWasCalled = true;

@@ -2,6 +2,8 @@
 
 namespace Mashbo\Mashbot\TaskRunner;
 
+use Mashbo\Mashbot\TaskRunner\Exceptions\ArgumentNotSetException;
+
 class TaskContext
 {
     /**
@@ -28,6 +30,9 @@ class TaskContext
 
     public function argument($name)
     {
+        if (!array_key_exists($name, $this->arguments)) {
+            throw new ArgumentNotSetException($name, $this->arguments);
+        }
         return $this->arguments[$name];
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Mashbo\Mashbot\TaskRunner\Tests\Unit;
 
+use Mashbo\Mashbot\TaskRunner\Exceptions\ArgumentNotSetException;
 use Mashbo\Mashbot\TaskRunner\TaskContext;
 use Mashbo\Mashbot\TaskRunner\TaskRunner;
 
@@ -37,5 +38,11 @@ class TaskContextTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertSame(['array' => ['a' => 'b']],    $this->sut->arguments());
         $this->assertSame(['a' => 'b'],                 $this->sut->argument('array'));
+    }
+
+    public function test_it_throws_exception_when_asked_for_arg_not_set()
+    {
+        $this->expectException(ArgumentNotSetException::class);
+        $this->sut->argument('undefined');
     }
 }
