@@ -3,6 +3,7 @@
 namespace Mashbo\Mashbot\TaskRunner;
 
 use Mashbo\Mashbot\TaskRunner\Exceptions\ArgumentNotSetException;
+use Psr\Log\LoggerInterface;
 
 class TaskContext
 {
@@ -10,12 +11,24 @@ class TaskContext
      * @var TaskRunner
      */
     private $taskRunner;
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
     private $arguments;
 
-    public function __construct(TaskRunner $taskRunner, $arguments)
+    public function __construct(TaskRunner $taskRunner, LoggerInterface $logger, $arguments)
     {
         $this->taskRunner = $taskRunner;
+        $this->logger = $logger;
         $this->arguments = $arguments;
+    }
+
+    public function logger()
+    {
+        return $this->logger;
     }
 
     public function taskRunner()

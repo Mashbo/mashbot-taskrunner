@@ -3,10 +3,21 @@
 namespace Mashbo\Mashbot\TaskRunner;
 
 use Mashbo\Mashbot\TaskRunner\Exceptions\TaskNotDefinedException;
+use Psr\Log\LoggerInterface;
 
 class TaskRunner
 {
     private $tasks = [];
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    public function __construct(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
 
     /**
      * @param $task
@@ -63,7 +74,7 @@ class TaskRunner
             $parameters[0]->getClass() &&
             $parameters[0]->getClass()->getName() == TaskContext::class
         ) {
-            call_user_func_array($task, [new TaskContext($this, $args)]);
+            call_user_func_array($task, [new TaskContext($this, $this->logger, $args)]);
             return;
         }
 

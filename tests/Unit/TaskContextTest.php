@@ -5,6 +5,8 @@ namespace Mashbo\Mashbot\TaskRunner\Tests\Unit;
 use Mashbo\Mashbot\TaskRunner\Exceptions\ArgumentNotSetException;
 use Mashbo\Mashbot\TaskRunner\TaskContext;
 use Mashbo\Mashbot\TaskRunner\TaskRunner;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 class TaskContextTest extends \PHPUnit_Framework_TestCase
 {
@@ -18,15 +20,27 @@ class TaskContextTest extends \PHPUnit_Framework_TestCase
      */
     private $sut;
 
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
     protected function setUp()
     {
-        $this->taskRunner = new TaskRunner();
+        $this->logger = new NullLogger();
+        $this->taskRunner = new TaskRunner($this->logger);
         $this->sut = new TaskContext(
             $this->taskRunner,
+            $this->logger,
             [
                 'array' => ['a' => 'b']
             ]
         );
+    }
+
+    public function test_it_exposes_logger_to_tasks()
+    {
+        $this->assertSame($this->logger, $this->sut->logger());
     }
 
     public function test_it_holds_runner()

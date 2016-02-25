@@ -6,6 +6,8 @@ use Mashbo\Mashbot\TaskRunner\Exceptions\TaskNotDefinedException;
 use Mashbo\Mashbot\TaskRunner\TaskContext;
 use Mashbo\Mashbot\TaskRunner\TaskRunner;
 use Mashbo\Mashbot\TaskRunner\Tests\Support\MockableTaskRunnerExtension;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 class TaskRunnerTest extends \PHPUnit_Framework_TestCase
 {
@@ -17,7 +19,7 @@ class TaskRunnerTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->sut = new TaskRunner();
+        $this->sut = new TaskRunner(new NullLogger());
     }
 
     public function test_it_throws_exception_if_task_is_invoked_but_not_defined()
