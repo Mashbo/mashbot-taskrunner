@@ -19,10 +19,11 @@ class TaskRunner
 
     public function addComposed($task, $composedTasks)
     {
-        $this->tasks[$task] = function() use ($composedTasks) {
+        $this->tasks[$task] = function(TaskContext $context) use ($composedTasks) {
 
+            $args = $context->arguments();
             foreach ($composedTasks as $task) {
-                $this->invoke($task);
+                $this->invoke($task, $args);
             }
         };
     }

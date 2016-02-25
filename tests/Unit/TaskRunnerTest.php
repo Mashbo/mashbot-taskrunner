@@ -102,7 +102,15 @@ class TaskRunnerTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($task1wasCalled);
         $this->assertTrue($task2wasCalled);
         $this->assertTrue($task3wasCalled);
+    }
 
+    public function test_composed_tasks_inherit_arguments_from_parent()
+    {
+        $this->sut->addComposed('foo', ['bar']);
+        $this->sut->add('bar', function(TaskContext $context) {
+            $this->assertEquals('qux', $context->argument('baz'));
+        });
+        $this->sut->invoke('foo', ['baz' => 'qux']);
     }
 
     /**
