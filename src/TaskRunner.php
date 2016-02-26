@@ -58,6 +58,9 @@ class TaskRunner
             case (is_object($task) && ($task instanceof \Closure)):
                 $parameters = (new \ReflectionFunction($task))->getParameters();
                 break;
+            case (is_object($task) && method_exists($task, '__invoke')):
+                $parameters = (new \ReflectionClass($task))->getMethod('__invoke')->getParameters();
+                break;
             case (is_array($task) && 2 == count($task)):
                 $parameters = (new \ReflectionClass($task[0]))->getMethod($task[1])->getParameters();
                 break;

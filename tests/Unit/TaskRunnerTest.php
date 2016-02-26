@@ -15,7 +15,8 @@ class TaskRunnerTest extends \PHPUnit_Framework_TestCase
      * @var TaskRunner
      */
     private $sut;
-    private $testCallableWasCalled = false;
+    private $testCallableWasCalled  = false;
+    private $invokeWasCalled        = false;
 
     protected function setUp()
     {
@@ -65,6 +66,12 @@ class TaskRunnerTest extends \PHPUnit_Framework_TestCase
     public function test_task_context_will_be_injected_if_static_class_array_callback_type_hints_it()
     {
         $this->sut->add('task:with:context', [TaskRunnerTest::class, 'exampleStaticCallableWithContext']);
+        $this->sut->invoke('task:with:context');
+    }
+
+    public function test_task_context_will_be_injected_if_callable_object_type_hints_it()
+    {
+        $this->sut->add('task:with:context', $this);
         $this->sut->invoke('task:with:context');
     }
 
@@ -139,5 +146,10 @@ class TaskRunnerTest extends \PHPUnit_Framework_TestCase
     public static function exampleStaticCallableWithContext(TaskContext $context)
     {
 
+    }
+
+    public function __invoke(TaskContext $context)
+    {
+        $this->invokeWasCalled = true;
     }
 }
