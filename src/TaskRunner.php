@@ -3,11 +3,19 @@
 namespace Mashbo\Mashbot\TaskRunner;
 
 use Mashbo\Mashbot\TaskRunner\Exceptions\TaskNotDefinedException;
+use Mashbo\Mashbot\TaskRunner\Hooks\BeforeTask\BeforeTaskContext;
 use Psr\Log\LoggerInterface;
 
 class TaskRunner
 {
     private $tasks = [];
+
+    /**
+     * @var callable[][][]
+     */
+    private $hooks = [
+        'before' => []
+    ];
 
     /**
      * @var LoggerInterface
@@ -26,22 +34,40 @@ class TaskRunner
     public function add($task, callable $callable)
     {
         $this->tasks[$task] = $callable;
+        $this->hooks['before'][$task] = [];
     }
 
     public function addComposed($task, $composedTasks)
     {
-        $this->tasks[$task] = function(TaskContext $context) use ($composedTasks) {
+        $this->add($task, function(TaskContext $context) use ($composedTasks) {
 
             $args = $context->arguments();
             foreach ($composedTasks as $task) {
                 $this->invoke($task, $args);
             }
-        };
+        });
+    }
+
+    public function before($task, callable $beforeHook)
+    {
+        $this->hooks['before'][$task][] = $beforeHook;
+    }
+
+    private function dispatchBeforeHook($taskName, BeforeTaskContext $context)
+    {
+        foreach ($this->hooks['before'][$taskName] as $hook) {
+            call_user_func($hook, $context);
+        }
     }
 
     public function invoke($task, array $args = [])
     {
-        $this->invokeCallable($this->locateCallable($task), $args);
+        $taskCallable = $this->locateCallable($task);
+
+        $beforeTaskContext = new BeforeTaskContext($args);
+        $this->dispatchBeforeHook($task, $beforeTaskContext);
+
+        $this->invokeCallable($taskCallable, $beforeTaskContext->arguments());
     }
 
     public function extend(TaskRunnerExtension $extension)
@@ -49,9 +75,6 @@ class TaskRunner
         $extension->amendTasks($this);
     }
 
-    /**
-     * @param $task
-     */
     private function invokeCallable(callable $task, array $args)
     {
         switch (true) {
