@@ -172,6 +172,15 @@ class TaskRunnerTest extends \PHPUnit_Framework_TestCase
         $this->sut->invoke('task2');
     }
 
+    public function test_tasks_can_return_values()
+    {
+        $this->sut->add('task', function() {
+            return 'value';
+        });
+
+        $this->assertEquals('value', $this->sut->invoke('task'));
+    }
+
 
     public function exampleCallable()
     {

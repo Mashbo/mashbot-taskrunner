@@ -67,7 +67,7 @@ class TaskRunner
         $beforeTaskContext = new BeforeTaskContext($args);
         $this->dispatchBeforeHook($task, $beforeTaskContext);
 
-        $this->invokeCallable($taskCallable, $beforeTaskContext->arguments());
+        return $this->invokeCallable($taskCallable, $beforeTaskContext->arguments());
     }
 
     public function extend(TaskRunnerExtension $extension)
@@ -100,11 +100,10 @@ class TaskRunner
             $parameters[0]->getClass() &&
             $parameters[0]->getClass()->getName() == TaskContext::class
         ) {
-            call_user_func_array($task, [new TaskContext($this, $this->logger, $args)]);
-            return;
+            return call_user_func_array($task, [new TaskContext($this, $this->logger, $args)]);
         }
 
-        call_user_func_array($task, []);
+        return call_user_func_array($task, []);
     }
 
     /**
