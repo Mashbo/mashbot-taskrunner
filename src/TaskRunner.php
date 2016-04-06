@@ -41,7 +41,9 @@ class TaskRunner
     public function add($task, callable $callable)
     {
         $this->tasks[$task] = $callable;
-        $this->hooks['before'][$task] = [];
+        if (!array_key_exists($task, $this->hooks['before'])) {
+            $this->hooks['before'][$task] = [];
+        }
     }
 
     public function addComposed($task, $composedTasks)
