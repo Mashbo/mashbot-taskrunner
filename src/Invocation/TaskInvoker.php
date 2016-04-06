@@ -48,6 +48,13 @@ class TaskInvoker
                 $resolvedCallableParameters[$index] = $context;
                 continue;
             }
+            if (
+                $parameter->getClass() &&
+                $parameter->getClass()->getName() == LoggerInterface::class
+            ) {
+                $resolvedCallableParameters[$index] = $context->logger();
+                continue;
+            }
 
             if (array_key_exists($parameter->name, $invokedArgs)) {
                 $resolvedCallableParameters[$index] = $invokedArgs[$parameter->name];

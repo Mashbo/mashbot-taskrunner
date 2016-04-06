@@ -18,10 +18,12 @@ class TaskArgumentsTypeHintingTest extends \PHPUnit_Framework_TestCase
      */
     private $sut;
     private $invokeWasCalled        = false;
+    private $logger;
 
     protected function setUp()
     {
-        $this->sut = new TaskRunner(new NullLogger());
+        $this->logger = new NullLogger();
+        $this->sut = new TaskRunner($this->logger);
     }
 
     public function test_task_context_will_be_injected_if_anon_function_type_hints_it()
@@ -56,6 +58,14 @@ class TaskArgumentsTypeHintingTest extends \PHPUnit_Framework_TestCase
         $this->sut->invoke('task:with:context');
     }
 
+    public function test_logger_is_injected_directly_if_hinted_for()
+    {
+        $this->sut->add('task', function(LoggerInterface $logger) {
+            $this->assertSame($logger, $this->logger);
+        });
+        $this->sut->invoke('task');
+    }
+
     public function test_named_parameters_are_injected()
     {
         $this->sut->add('task', function($arg1, $anotherArgument) {
@@ -88,7 +98,6 @@ class TaskArgumentsTypeHintingTest extends \PHPUnit_Framework_TestCase
         });
         $this->sut->invoke('task:with:args', ['foo' => 'bar']);
     }
-
 
     public function exampleCallableWithContext(TaskContext $context)
     {
