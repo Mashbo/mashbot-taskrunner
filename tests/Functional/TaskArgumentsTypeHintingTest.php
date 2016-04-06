@@ -2,6 +2,7 @@
 
 namespace Mashbo\Mashbot\TaskRunner\Tests\Unit;
 
+use Mashbo\Mashbot\TaskRunner\Exceptions\CannotAutomaticallyInjectParameterException;
 use Mashbo\Mashbot\TaskRunner\Exceptions\TaskNotDefinedException;
 use Mashbo\Mashbot\TaskRunner\Hooks\BeforeTask\BeforeTaskContext;
 use Mashbo\Mashbot\TaskRunner\TaskContext;
@@ -62,6 +63,13 @@ class TaskArgumentsTypeHintingTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals('anotherValue', $anotherArgument);
         });
         $this->sut->invoke('task', ['arg1' => 'arg1', 'anotherArgument' => 'anotherValue']);
+    }
+
+    public function test_exception_is_thrown_if_typehinted_arg_is_unknown()
+    {
+        $this->sut->add('task', function(\DateTime $time, $argument) {});
+        $this->expectException(CannotAutomaticallyInjectParameterException::class);
+        $this->sut->invoke('task', ['argument' => 'value']);
     }
 
     public function test_named_parameters_are_injected_for_method_callable()

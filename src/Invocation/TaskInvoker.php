@@ -2,6 +2,7 @@
 
 namespace Mashbo\Mashbot\TaskRunner\Invocation;
 
+use Mashbo\Mashbot\TaskRunner\Exceptions\CannotAutomaticallyInjectParameterException;
 use Mashbo\Mashbot\TaskRunner\TaskContext;
 use Mashbo\Mashbot\TaskRunner\TaskRunner;
 use Psr\Log\LoggerInterface;
@@ -52,6 +53,8 @@ class TaskInvoker
                 $resolvedCallableParameters[$index] = $invokedArgs[$parameter->name];
                 continue;
             }
+
+            throw new CannotAutomaticallyInjectParameterException($parameter->name);
         }
 
         return $resolvedCallableParameters;
