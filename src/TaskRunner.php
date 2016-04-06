@@ -4,6 +4,7 @@ namespace Mashbo\Mashbot\TaskRunner;
 
 use Mashbo\Mashbot\TaskRunner\Exceptions\TaskNotDefinedException;
 use Mashbo\Mashbot\TaskRunner\Hooks\BeforeTask\BeforeTaskContext;
+use Mashbo\Mashbot\TaskRunner\Invocation\TaskInvoker;
 use Psr\Log\LoggerInterface;
 
 class TaskRunner
@@ -22,9 +23,15 @@ class TaskRunner
      */
     private $logger;
 
+    /**
+     * @var TaskInvoker
+     */
+    private $taskInvoker;
+
     public function __construct(LoggerInterface $logger)
     {
         $this->logger = $logger;
+        $this->taskInvoker = new TaskInvoker();
     }
 
     /**
@@ -67,43 +74,12 @@ class TaskRunner
         $beforeTaskContext = new BeforeTaskContext($args);
         $this->dispatchBeforeHook($task, $beforeTaskContext);
 
-        return $this->invokeCallable($taskCallable, $beforeTaskContext->arguments());
+        return $this->taskInvoker->invokeCallable($taskCallable, new TaskContext($this, $this->logger, $beforeTaskContext->arguments()));
     }
 
     public function extend(TaskRunnerExtension $extension)
     {
         $extension->amendTasks($this);
-    }
-
-    private function invokeCallable(callable $task, array $args)
-    {
-        switch (true) {
-            case (is_object($task) && ($task instanceof \Closure)):
-                $parameters = (new \ReflectionFunction($task))->getParameters();
-                break;
-            case (is_object($task) && method_exists($task, '__invoke')):
-                $parameters = (new \ReflectionClass($task))->getMethod('__invoke')->getParameters();
-                break;
-            case (is_array($task) && 2 == count($task)):
-                $parameters = (new \ReflectionClass($task[0]))->getMethod($task[1])->getParameters();
-                break;
-            case (is_string($task) && false !== strpos($task, '::')):
-                $parts = explode('::', $task);
-                $parameters = (new \ReflectionClass($parts[0]))->getMethod($parts[1])->getParameters();
-                break;
-            default:
-                throw new \LogicException("Cannot reflect callable type. This type of callable is not yet supported.");
-        }
-
-        if (
-            1 == count($parameters) &&
-            $parameters[0]->getClass() &&
-            $parameters[0]->getClass()->getName() == TaskContext::class
-        ) {
-            return call_user_func_array($task, [new TaskContext($this, $this->logger, $args)]);
-        }
-
-        return call_user_func_array($task, []);
     }
 
     /**
