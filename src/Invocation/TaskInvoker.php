@@ -61,6 +61,11 @@ class TaskInvoker
                 continue;
             }
 
+            if ($parameter->isDefaultValueAvailable()) {
+                $resolvedCallableParameters[$index] = $parameter->getDefaultValue();
+                continue;
+            }
+
             throw new CannotAutomaticallyInjectParameterException($parameter->name);
         }
 

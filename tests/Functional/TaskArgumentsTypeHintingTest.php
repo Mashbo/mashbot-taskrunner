@@ -82,6 +82,35 @@ class TaskArgumentsTypeHintingTest extends \PHPUnit_Framework_TestCase
         $this->sut->invoke('task', ['argument' => 'value']);
     }
 
+    public function test_arguments_can_have_null_defaults()
+    {
+        $this->sut->add('task', function ($arg1, $anotherArgument = null) {
+            $this->assertEquals('arg1', $arg1);
+            $this->assertNull($anotherArgument);
+        });
+        $this->sut->invoke('task', ['arg1' => 'arg1']);
+    }
+
+    public function test_arguments_can_have_non_null_defaults()
+    {
+        $this->sut->add('task', function($arg1, $anotherArgument = 'default') {
+            $this->assertEquals('arg1',         $arg1);
+            $this->assertEquals('default', $anotherArgument);
+        });
+        $this->sut->invoke('task', ['arg1' => 'arg1']);
+    }
+
+    public function test_optional_arguments_are_overridden_if_passed() {
+        $this->sut->add('task', function($arg1, $anotherArgument = 'default') {
+            $this->assertEquals('arg1',         $arg1);
+            $this->assertEquals('value', $anotherArgument);
+        });
+        $this->sut->invoke('task', ['arg1' => 'arg1', 'anotherArgument' => 'value']);
+    }
+
+
+
+
     public function test_named_parameters_are_injected_for_method_callable()
     {
         $this->sut->add('task', [$this, 'exampleCallableWithNamedParameters']);
