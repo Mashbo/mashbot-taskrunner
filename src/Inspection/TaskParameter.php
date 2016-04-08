@@ -20,6 +20,16 @@ class TaskParameter
         return $param;
     }
 
+    public function isRequired()
+    {
+        return !$this->param->isOptional();
+    }
+
+    public function defaultValue()
+    {
+        return $this->param->getDefaultValue();
+    }
+
     public function name()
     {
         return $this->param->name;

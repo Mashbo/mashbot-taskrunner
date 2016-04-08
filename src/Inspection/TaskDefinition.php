@@ -15,7 +15,7 @@ class TaskDefinition
     }
 
     /**
-     * @return TaskParameterList
+     * @return TaskParameterList|TaskParameter[]
      */
     public function parameters()
     {
