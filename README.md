@@ -16,3 +16,5 @@
     $taskRunner->before('dns:record:add', function(BeforeTaskContext $context) {
         $context->setArgument('record', $context->argument('record') . ".mashbo.com");
     });
+
+    $taskRunner->tasks()->get('project:start')

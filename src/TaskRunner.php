@@ -2,14 +2,17 @@
 
 namespace Mashbo\Mashbot\TaskRunner;
 
+use Mashbo\Mashbot\TaskRunner\Configuration\Exceptions\UndefinedTaskException;
+use Mashbo\Mashbot\TaskRunner\Configuration\MutableTaskList;
 use Mashbo\Mashbot\TaskRunner\Exceptions\TaskNotDefinedException;
 use Mashbo\Mashbot\TaskRunner\Hooks\BeforeTask\BeforeTaskContext;
+use Mashbo\Mashbot\TaskRunner\Inspection\TaskList;
 use Mashbo\Mashbot\TaskRunner\Invocation\TaskInvoker;
 use Psr\Log\LoggerInterface;
 
 class TaskRunner
 {
-    private $tasks = [];
+    private $tasks;
 
     /**
      * @var callable[][][]
@@ -32,6 +35,12 @@ class TaskRunner
     {
         $this->logger = $logger;
         $this->taskInvoker = new TaskInvoker();
+        $this->tasks = new MutableTaskList([]);
+    }
+
+    public function tasks()
+    {
+        return new TaskList($this->tasks);
     }
 
     /**
@@ -40,7 +49,7 @@ class TaskRunner
      */
     public function add($task, callable $callable)
     {
-        $this->tasks[$task] = $callable;
+        $this->tasks->add($task, $callable);
         if (!array_key_exists($task, $this->hooks['before'])) {
             $this->hooks['before'][$task] = [];
         }
@@ -90,10 +99,10 @@ class TaskRunner
      */
     private function locateCallable($task)
     {
-        if (!array_key_exists($task, $this->tasks)) {
+        try {
+            return $this->tasks->find($task);
+        } catch (UndefinedTaskException $e) {
             throw new TaskNotDefinedException($task);
         }
-
-        return $this->tasks[$task];
     }
 }
