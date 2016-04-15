@@ -95,7 +95,7 @@ class TaskRunner
 
     /**
      * @param $task
-     * @return mixed
+     * @return callable
      */
     private function locateCallable($task)
     {
