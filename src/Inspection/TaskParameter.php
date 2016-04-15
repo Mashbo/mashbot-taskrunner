@@ -2,7 +2,7 @@
 
 namespace Mashbo\Mashbot\TaskRunner\Inspection;
 
-class TaskParameter
+final class TaskParameter
 {
     /**
      * @var \ReflectionParameter
@@ -15,7 +15,7 @@ class TaskParameter
 
     public static function fromReflectionParameter(\ReflectionParameter $parameter)
     {
-        $param = new self;
+        $param        = new self;
         $param->param = $parameter;
         return $param;
     }

@@ -4,7 +4,7 @@ namespace Mashbo\Mashbot\TaskRunner\Inspection;
 
 use Traversable;
 
-class TaskParameterList implements \IteratorAggregate
+final class TaskParameterList implements \IteratorAggregate
 {
     /**
      * @var \ReflectionParameter[]

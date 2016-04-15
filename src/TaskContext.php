@@ -22,8 +22,8 @@ class TaskContext
     public function __construct(TaskRunner $taskRunner, LoggerInterface $logger, $arguments)
     {
         $this->taskRunner = $taskRunner;
-        $this->logger = $logger;
-        $this->arguments = $arguments;
+        $this->logger     = $logger;
+        $this->arguments  = $arguments;
     }
 
     public function logger()

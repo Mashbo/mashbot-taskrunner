@@ -33,9 +33,9 @@ class TaskRunner
 
     public function __construct(LoggerInterface $logger)
     {
-        $this->logger = $logger;
+        $this->logger      = $logger;
         $this->taskInvoker = new TaskInvoker();
-        $this->tasks = new MutableTaskList([]);
+        $this->tasks       = new MutableTaskList([]);
     }
 
     public function tasks()
@@ -85,7 +85,10 @@ class TaskRunner
         $beforeTaskContext = new BeforeTaskContext($args);
         $this->dispatchBeforeHook($task, $beforeTaskContext);
 
-        return $this->taskInvoker->invokeCallable($taskCallable, new TaskContext($this, $this->logger, $beforeTaskContext->arguments()));
+        return $this->taskInvoker->invokeCallable(
+            $taskCallable,
+            new TaskContext($this, $this->logger, $beforeTaskContext->arguments())
+        );
     }
 
     public function extend(TaskRunnerExtension $extension)
