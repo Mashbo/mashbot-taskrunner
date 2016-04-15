@@ -20,8 +20,8 @@ class TaskInvoker
 
     private function resolveParametersToCallable($callableParameters, TaskContext $context)
     {
-        $resolvedCallableParameters = [];
-        $invokedArgs = $context->arguments();
+        $resolvedParameters = [];
+        $invokedArgs        = $context->arguments();
 
         foreach ($callableParameters as $index => $parameter) {
             /**
@@ -31,30 +31,30 @@ class TaskInvoker
                 $parameter->getClass() &&
                 $parameter->getClass()->getName() == TaskContext::class
             ) {
-                $resolvedCallableParameters[$index] = $context;
+                $resolvedParameters[$index] = $context;
                 continue;
             }
             if (
                 $parameter->getClass() &&
                 $parameter->getClass()->getName() == LoggerInterface::class
             ) {
-                $resolvedCallableParameters[$index] = $context->logger();
+                $resolvedParameters[$index] = $context->logger();
                 continue;
             }
 
             if (array_key_exists($parameter->name, $invokedArgs)) {
-                $resolvedCallableParameters[$index] = $invokedArgs[$parameter->name];
+                $resolvedParameters[$index] = $invokedArgs[$parameter->name];
                 continue;
             }
 
             if ($parameter->isDefaultValueAvailable()) {
-                $resolvedCallableParameters[$index] = $parameter->getDefaultValue();
+                $resolvedParameters[$index] = $parameter->getDefaultValue();
                 continue;
             }
 
             throw new CannotAutomaticallyInjectParameterException($parameter->name);
         }
 
-        return $resolvedCallableParameters;
+        return $resolvedParameters;
     }
 }
