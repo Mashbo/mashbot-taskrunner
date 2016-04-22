@@ -1,6 +1,6 @@
 <?php
 
-namespace Mashbo\Mashbot\Tests\Functional;
+namespace Mashbo\Mashbot\TaskRunner\Tests\Functional;
 
 use Mashbo\Mashbot\TaskRunner\Invocation\TaskInvoker;
 use Mashbo\Mashbot\TaskRunner\TaskContext;
