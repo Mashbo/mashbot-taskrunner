@@ -9,7 +9,7 @@ final class TaskParameterList implements \IteratorAggregate
     /**
      * @var \ReflectionParameter[]
      */
-    private $params;
+    private $params = [];
 
     private function __construct() {}
 
