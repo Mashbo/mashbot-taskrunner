@@ -5,6 +5,7 @@ namespace Mashbo\Mashbot\TaskRunner;
 use Mashbo\Mashbot\TaskRunner\Configuration\Exceptions\UndefinedTaskException;
 use Mashbo\Mashbot\TaskRunner\Configuration\MutableTaskList;
 use Mashbo\Mashbot\TaskRunner\Exceptions\TaskNotDefinedException;
+use Mashbo\Mashbot\TaskRunner\Hooks\AfterTask\AfterTaskContext;
 use Mashbo\Mashbot\TaskRunner\Hooks\BeforeTask\BeforeTaskContext;
 use Mashbo\Mashbot\TaskRunner\Inspection\TaskList;
 use Mashbo\Mashbot\TaskRunner\Invocation\TaskInvoker;
@@ -18,7 +19,8 @@ class TaskRunner
      * @var callable[][][]
      */
     private $hooks = [
-        'before' => []
+        'before' => [],
+        'after' => [],
     ];
 
     /**
@@ -53,6 +55,9 @@ class TaskRunner
         if (!array_key_exists($task, $this->hooks['before'])) {
             $this->hooks['before'][$task] = [];
         }
+        if (!array_key_exists($task, $this->hooks['after'])) {
+            $this->hooks['after'][$task] = [];
+        }
     }
 
     public function addComposed($task, $composedTasks)
@@ -71,9 +76,21 @@ class TaskRunner
         $this->hooks['before'][$task][] = $beforeHook;
     }
 
+    public function after($task, callable $afterHook)
+    {
+        $this->hooks['after'][$task][] = $afterHook;
+    }
+
     private function dispatchBeforeHook($taskName, BeforeTaskContext $context)
     {
         foreach ($this->hooks['before'][$taskName] as $hook) {
+            call_user_func($hook, $context);
+        }
+    }
+
+    private function dispatchAfterHook($taskName, AfterTaskContext $context)
+    {
+        foreach ($this->hooks['after'][$taskName] as $hook) {
             call_user_func($hook, $context);
         }
     }
@@ -85,10 +102,15 @@ class TaskRunner
         $beforeTaskContext = new BeforeTaskContext($args);
         $this->dispatchBeforeHook($task, $beforeTaskContext);
 
-        return $this->taskInvoker->invokeCallable(
+        $taskResult = $this->taskInvoker->invokeCallable(
             $taskCallable,
             new TaskContext($this, $this->logger, $beforeTaskContext->arguments())
         );
+
+        $afterTaskContext = new AfterTaskContext($this, $args);
+        $this->dispatchAfterHook($task, $afterTaskContext);
+
+        return $taskResult;
     }
 
     public function extend(TaskRunnerExtension $extension)

@@ -1,6 +1,6 @@
 <?php
 
-namespace Mashbo\Mashbot\TaskRunner\Tests\Hooks\BeforeTask;
+namespace Mashbo\Mashbot\TaskRunner\Tests\Unit\Hooks\BeforeTask;
 
 use Mashbo\Mashbot\TaskRunner\Hooks\BeforeTask\BeforeTaskContext;
 
