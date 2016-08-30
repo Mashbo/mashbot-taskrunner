@@ -2,9 +2,12 @@
 
 namespace Mashbo\Mashbot\TaskRunner\Tests\Unit;
 
+use Mashbo\Mashbot\TaskRunner\Configuration\TaskRunnerFactory;
 use Mashbo\Mashbot\TaskRunner\Exceptions\CannotAutomaticallyInjectParameterException;
 use Mashbo\Mashbot\TaskRunner\Exceptions\TaskNotDefinedException;
 use Mashbo\Mashbot\TaskRunner\Hooks\BeforeTask\BeforeTaskContext;
+use Mashbo\Mashbot\TaskRunner\Invocation\DirectTaskInvoker;
+use Mashbo\Mashbot\TaskRunner\Invocation\DispatchingTaskInvoker;
 use Mashbo\Mashbot\TaskRunner\TaskContext;
 use Mashbo\Mashbot\TaskRunner\TaskRunner;
 use Mashbo\Mashbot\TaskRunner\Tests\Support\MockableTaskRunnerExtension;
@@ -17,13 +20,13 @@ class TaskArgumentsTypeHintingTest extends \PHPUnit_Framework_TestCase
      * @var TaskRunner
      */
     private $sut;
-    private $invokeWasCalled        = false;
+    private $invokeWasCalled = false;
     private $logger;
 
     protected function setUp()
     {
         $this->logger = new NullLogger();
-        $this->sut = new TaskRunner($this->logger);
+        $this->sut = TaskRunnerFactory::create($this->logger);
     }
 
     public function test_task_context_will_be_injected_if_anon_function_type_hints_it()

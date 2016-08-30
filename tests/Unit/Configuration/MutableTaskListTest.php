@@ -4,6 +4,7 @@ namespace Mashbo\Mashbot\TaskRunner\Tests\Unit\Configuration;
 
 use Mashbo\Mashbot\TaskRunner\Configuration\Exceptions\UndefinedTaskException;
 use Mashbo\Mashbot\TaskRunner\Configuration\MutableTaskList;
+use Mashbo\Mashbot\TaskRunner\Exceptions\TaskNotDefinedException;
 
 class MutableTaskListTest extends \PHPUnit_Framework_TestCase
 {
@@ -24,7 +25,7 @@ class MutableTaskListTest extends \PHPUnit_Framework_TestCase
 
     public function test_it_throws_exception_when_trying_to_find_unknown_task()
     {
-        $this->expectException(UndefinedTaskException::class);
+        $this->expectException(TaskNotDefinedException::class);
         $this->sut->find('task');
     }
 

@@ -2,7 +2,10 @@
 
 namespace Mashbo\Mashbot\TaskRunner\Tests\Unit;
 
+use Mashbo\Mashbot\TaskRunner\Configuration\TaskRunnerFactory;
 use Mashbo\Mashbot\TaskRunner\Exceptions\ArgumentNotSetException;
+use Mashbo\Mashbot\TaskRunner\Invocation\DirectTaskInvoker;
+use Mashbo\Mashbot\TaskRunner\Invocation\DispatchingTaskInvoker;
 use Mashbo\Mashbot\TaskRunner\TaskContext;
 use Mashbo\Mashbot\TaskRunner\TaskRunner;
 use Psr\Log\LoggerInterface;
@@ -28,7 +31,7 @@ class TaskContextTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->logger = new NullLogger();
-        $this->taskRunner = new TaskRunner($this->logger);
+        $this->taskRunner = TaskRunnerFactory::create();
         $this->sut = new TaskContext(
             $this->taskRunner,
             $this->logger,
@@ -52,6 +55,14 @@ class TaskContextTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertSame(['array' => ['a' => 'b']],    $this->sut->arguments());
         $this->assertSame(['a' => 'b'],                 $this->sut->argument('array'));
+    }
+
+    public function test_it_creates_new_object_with_replaced_arguments()
+    {
+        $newContext = $this->sut->withArguments(['foo' => 'bar']);
+        $this->assertInstanceOf(TaskContext::class, $newContext);
+        $this->assertNotSame($newContext, $this->sut);
+
     }
 
     public function test_it_throws_exception_when_asked_for_arg_not_set()
