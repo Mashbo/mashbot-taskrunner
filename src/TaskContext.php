@@ -48,4 +48,9 @@ class TaskContext
         }
         return $this->arguments[$name];
     }
+
+    public function withArguments($args)
+    {
+        return new self($this->taskRunner, $this->logger, $args);
+    }
 }

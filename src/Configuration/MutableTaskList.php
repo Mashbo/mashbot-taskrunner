@@ -2,7 +2,7 @@
 
 namespace Mashbo\Mashbot\TaskRunner\Configuration;
 
-use Mashbo\Mashbot\TaskRunner\Configuration\Exceptions\UndefinedTaskException;
+use Mashbo\Mashbot\TaskRunner\Exceptions\TaskNotDefinedException;
 
 class MutableTaskList implements \Countable
 {
@@ -19,7 +19,7 @@ class MutableTaskList implements \Countable
     public function find($task)
     {
         if (!array_key_exists($task, $this->tasks)) {
-            throw new UndefinedTaskException($task);
+            throw new TaskNotDefinedException($task);
         }
         return $this->tasks[$task];
     }

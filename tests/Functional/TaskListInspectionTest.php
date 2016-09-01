@@ -2,8 +2,11 @@
 
 namespace Mashbo\Mashbot\TaskRunner\Tests\Functional;
 
+use Mashbo\Mashbot\TaskRunner\Configuration\TaskRunnerFactory;
 use Mashbo\Mashbot\TaskRunner\Inspection\TaskDefinition;
 use Mashbo\Mashbot\TaskRunner\Inspection\TaskParameterList;
+use Mashbo\Mashbot\TaskRunner\Invocation\DirectTaskInvoker;
+use Mashbo\Mashbot\TaskRunner\Invocation\DispatchingTaskInvoker;
 use Mashbo\Mashbot\TaskRunner\TaskRunner;
 use Psr\Log\NullLogger;
 
@@ -16,7 +19,7 @@ class TaskListInspectionTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->sut = new TaskRunner(new NullLogger());
+        $this->sut = TaskRunnerFactory::create();
     }
 
     public function test_task_list_is_initially_empty()

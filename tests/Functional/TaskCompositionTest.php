@@ -2,8 +2,11 @@
 
 namespace Mashbo\Mashbot\TaskRunner\Tests\Unit;
 
+use Mashbo\Mashbot\TaskRunner\Configuration\TaskRunnerFactory;
 use Mashbo\Mashbot\TaskRunner\Exceptions\TaskNotDefinedException;
 use Mashbo\Mashbot\TaskRunner\Hooks\BeforeTask\BeforeTaskContext;
+use Mashbo\Mashbot\TaskRunner\Invocation\DirectTaskInvoker;
+use Mashbo\Mashbot\TaskRunner\Invocation\DispatchingTaskInvoker;
 use Mashbo\Mashbot\TaskRunner\TaskContext;
 use Mashbo\Mashbot\TaskRunner\TaskRunner;
 use Mashbo\Mashbot\TaskRunner\Tests\Support\MockableTaskRunnerExtension;
@@ -19,7 +22,7 @@ class TaskCompositionTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->sut = new TaskRunner(new NullLogger());
+        $this->sut = TaskRunnerFactory::create();
     }
 
     public function test_task_can_be_composed_of_other_tasks()

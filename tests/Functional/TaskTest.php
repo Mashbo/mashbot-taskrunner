@@ -2,6 +2,7 @@
 
 namespace Mashbo\Mashbot\TaskRunner\Tests\Functional;
 
+use Mashbo\Mashbot\TaskRunner\Invocation\DirectTaskInvoker;
 use Mashbo\Mashbot\TaskRunner\Invocation\TaskInvoker;
 use Mashbo\Mashbot\TaskRunner\TaskContext;
 use Mashbo\Mashbot\TaskRunner\TaskRunner;
@@ -50,7 +51,7 @@ abstract class TaskTest extends \PHPUnit_Framework_TestCase
 
     protected function invoke($args)
     {
-        $invoker = new TaskInvoker();
+        $invoker = new DirectTaskInvoker();
         return $invoker->invokeCallable($this->sut, new TaskContext($this->runner->reveal(), new NullLogger(), $args));
     }
 }
