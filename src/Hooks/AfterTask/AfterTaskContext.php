@@ -6,16 +6,23 @@ use Mashbo\Mashbot\TaskRunner\TaskRunner;
 
 class AfterTaskContext
 {
+    private $taskName;
     private $arguments;
     /**
      * @var TaskRunner
      */
     private $taskRunner;
 
-    public function __construct(TaskRunner $taskRunner, $arguments)
+    public function __construct($taskName, TaskRunner $taskRunner, $arguments)
     {
+        $this->taskName = $taskName;
         $this->arguments = $arguments;
         $this->taskRunner = $taskRunner;
+    }
+
+    public function taskName()
+    {
+        return $this->taskName;
     }
 
     /**

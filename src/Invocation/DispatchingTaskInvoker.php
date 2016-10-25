@@ -13,9 +13,14 @@ class DispatchingTaskInvoker implements TaskInvoker
      * @var callable[][][]
      */
     private $hooks = [
-        'beforeFirstTask' => [],
-        'before' => [],
-        'after' => [],
+        'beforeFirstTask'   => [],
+        'before'            => [],
+        'after'             => [],
+
+        'global'    => [
+            'before'    => [],
+            'after'     => [],
+        ]
     ];
 
     /**
@@ -34,6 +39,16 @@ class DispatchingTaskInvoker implements TaskInvoker
         $this->hooks['beforeFirstTask'][] = $callable;
     }
 
+    public function beforeAnyTask(callable $beforeHook)
+    {
+        $this->hooks['global']['before'][] = $beforeHook;
+    }
+
+    public function afterAnyTask(callable $afterHook)
+    {
+        $this->hooks['global']['after'][] = $afterHook;
+    }
+
     public function before($task, callable $beforeHook)
     {
         $this->hooks['before'][$task][] = $beforeHook;
@@ -46,6 +61,12 @@ class DispatchingTaskInvoker implements TaskInvoker
 
     private function dispatchBeforeHook($taskName, BeforeTaskContext $context)
     {
+        $this->dispatchNamedBeforeHooks($taskName, $context);
+        $this->dispatchGlobalBeforeHooks($context);
+    }
+
+    private function dispatchNamedBeforeHooks($taskName, BeforeTaskContext $context)
+    {
         if (!array_key_exists($taskName, $this->hooks['before'])) {
             return;
         }
@@ -55,6 +76,12 @@ class DispatchingTaskInvoker implements TaskInvoker
     }
 
     private function dispatchAfterHook($taskName, AfterTaskContext $context)
+    {
+        $this->dispatchNamedAfterHooks($taskName, $context);
+        $this->dispatchGlobalAfterHooks($context);
+    }
+
+    private function dispatchNamedAfterHooks($taskName, AfterTaskContext $context)
     {
         if (!array_key_exists($taskName, $this->hooks['after'])) {
             return;
@@ -73,7 +100,7 @@ class DispatchingTaskInvoker implements TaskInvoker
 
         $args = $context->arguments();
 
-        $beforeTaskContext = new BeforeTaskContext($args);
+        $beforeTaskContext = new BeforeTaskContext($task, $args);
         $this->dispatchBeforeHook($task, $beforeTaskContext);
 
         $context = $context->withArguments($beforeTaskContext->arguments());
@@ -85,7 +112,7 @@ class DispatchingTaskInvoker implements TaskInvoker
             ArgumentResolver::resolveParametersToCallable($callable, $context)
         );
 
-        $afterTaskContext = new AfterTaskContext($context->taskRunner(), $args);
+        $afterTaskContext = new AfterTaskContext($task, $context->taskRunner(), $args);
         $this->dispatchAfterHook($task, $afterTaskContext);
 
         return $taskResult;
@@ -97,5 +124,22 @@ class DispatchingTaskInvoker implements TaskInvoker
             $hook($context);
         }
         $this->beforeFirstTaskHooksRun = true;
+    }
+
+    private function dispatchGlobalBeforeHooks(BeforeTaskContext $context)
+    {
+        foreach ($this->hooks['global']['before'] as $hook) {
+            call_user_func($hook, $context);
+        }
+    }
+
+    /**
+     * @param AfterTaskContext $context
+     */
+    private function dispatchGlobalAfterHooks(AfterTaskContext $context)
+    {
+        foreach ($this->hooks['global']['after'] as $hook) {
+            call_user_func($hook, $context);
+        }
     }
 }
