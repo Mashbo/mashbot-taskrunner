@@ -16,8 +16,16 @@ class AfterTaskContextTest extends \PHPUnit_Framework_TestCase
     {
         $runner = $this->prophesize(TaskRunner::class);
 
-        $this->sut = new AfterTaskContext($runner->reveal(), ['a' => 'b', 'c' => 'd']);
+        $this->sut = new AfterTaskContext('task', $runner->reveal(), ['a' => 'b', 'c' => 'd']);
         $this->assertEquals(['a' => 'b', 'c' => 'd'], $this->sut->arguments());
         $this->assertEquals($runner->reveal(), $this->sut->taskRunner());
+    }
+
+    public function test_it_keeps_task_name()
+    {
+        $runner = $this->prophesize(TaskRunner::class);
+
+        $this->sut = new AfterTaskContext('task', $runner->reveal(), ['a' => 'b', 'c' => 'd']);
+        $this->assertEquals('task', $this->sut->taskName());
     }
 }

@@ -13,7 +13,7 @@ class BeforeTaskContextTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->sut = new BeforeTaskContext([]);
+        $this->sut = new BeforeTaskContext('taskName', []);
     }
 
     public function testItHasMutableArguments()
@@ -27,6 +27,10 @@ class BeforeTaskContextTest extends \PHPUnit_Framework_TestCase
         $this->sut->setArgument('a', 'b');
         $this->sut->setArgument('c', 'd');
         $this->assertEquals(['a' => 'b', 'c' => 'd'], $this->sut->arguments());
+    }
 
+    public function test_it_keeps_task_name()
+    {
+        $this->assertEquals('taskName', $this->sut->taskName());
     }
 }

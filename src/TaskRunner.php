@@ -12,6 +12,14 @@ class TaskRunner
     private $tasks;
 
     /**
+     * @var callable[][][]
+     */
+    private $hooks = [
+        'before'    => [],
+        'after'     => [],
+    ];
+
+    /**
      * @var LoggerInterface
      */
     private $logger;
@@ -74,6 +82,16 @@ class TaskRunner
             $task,
             new TaskContext($this, $this->logger, $args)
         );
+    }
+
+    public function beforeAnyTask(callable $beforeHook)
+    {
+        $this->dispatchingTaskInvoker->beforeAnyTask($beforeHook);
+    }
+
+    public function afterAnyTask(callable $afterHook)
+    {
+        $this->dispatchingTaskInvoker->afterAnyTask($afterHook);
     }
 
     public function extend(TaskRunnerExtension $extension)
