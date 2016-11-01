@@ -10,7 +10,7 @@ use Mashbo\Mashbot\TaskRunner\TaskContext;
 class DispatchingTaskInvoker implements TaskInvoker
 {
     /**
-     * @var callable[][][]
+     * @var callable[][][]|callable[][]
      */
     private $hooks = [
         'beforeFirstTask'   => [],
